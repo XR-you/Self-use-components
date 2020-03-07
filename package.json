@@ -36,13 +36,31 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/strongly-recommended",
       "@vue/standard"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "editor.formatOnSave": true,
+      "eslint.autoFixOnSave": true,
+      "quotes": [
+        1,
+        "double"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-mixed-spaces-and-tabs": [
+        "error",
+        "smart-tabs"
+      ],
+      "vue/html-closing-bracket-newline": "off",
+      "vue/camelcase": "error",
+      "vue/comma-dangle": "error"
+    }
   },
   "browserslist": [
     "> 1%",
