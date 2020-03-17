@@ -1,10 +1,17 @@
 <template>
-  <div>这是主页</div>
+  <div>
+    <message />
+  </div>
 </template>
 
 <script>
+import Message from "./Message/Message";
+
 export default {
-  name: "HomePage"
+  name: "HomePage",
+  components: {
+    Message
+  }
 };
 </script>
 

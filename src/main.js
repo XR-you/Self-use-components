@@ -4,8 +4,12 @@ import router from "./router";
 import store from "./store";
 import Axios from "axios";
 
+import Avatar from "element-ui";
+
 Vue.config.productionTip = false;
 Vue.prototype.$axios = Axios;
+
+Vue.use(Avatar);
 
 new Vue({
   router,
