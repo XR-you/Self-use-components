@@ -5,7 +5,7 @@
       <span>{{ messageItem }}</span>
     </div>
     <div>
-      <el-avatar :src="userInfo.userAvatar" />
+      <el-avatar :src="currentUser.userAvatar" />
     </div>
   </div>
 </template>
@@ -18,7 +18,7 @@ export default {
       type: String,
       default: null
     },
-    userInfo: {
+    currentUser: {
       type: Object,
       default () {
         return {};
@@ -38,12 +38,31 @@ export default {
     padding: 3% 3% 0 0;
     max-width: 70%;
   }
+  .msg-box-left {
+    display: flex;
+    flex-direction: row-reverse;
+    word-break: break-all;
+    word-wrap: break-word;
+    margin-left: 3%;
+    float: left;
+    padding: 3% 3% 0 0;
+    max-width: 70%;
+  }
   .msg-content {
     display: table;
     background-color: #adc0f1;
     padding: 9px 6px 9px 6px;
     margin-right: 8px;
     border-radius: 10px 0 10px 10px;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+  }
+  .msg-content-left {
+    display: table;
+    background-color: #adc0f1;
+    padding: 9px 6px 9px 6px;
+    margin-left: 8px;
+    border-radius: 0 10px 10px 10px;
     white-space: pre-wrap;
     box-sizing: border-box;
   }

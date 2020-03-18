@@ -8,7 +8,8 @@
           v-for="(message, index) in messageArray"
           :key="index">
           <message-item
-            :message-item="message" />
+            :message-item="message"
+            :current-user="currentUser" />
         </li>
       </ul>
     </div>
@@ -44,6 +45,12 @@ export default {
       default () {
         return 0;
       }
+    },
+    currentUser: {
+      type: Object,
+      default () {
+        return {};
+      }
     }
   },
   data () {
@@ -57,6 +64,7 @@ export default {
       if (this.message !== "") {
         this.messageArray.push(this.message);
         this.$emit("showLastMessage", this.message, this.contactIndex); // 用于在user中显示最后一条消息
+        this.$emit("getMessage", this.message, this.contactIndex);
         this.message = "";
       }
     }
@@ -80,6 +88,7 @@ export default {
   .letter-main ul {
     list-style-type: none;
     margin: 1% 0 0 0;
+    padding: 0;
   }
   .letter-main li {
     list-style: none;

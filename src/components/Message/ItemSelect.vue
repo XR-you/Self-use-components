@@ -33,7 +33,7 @@ export default {
 
 <style scoped>
   .item-select {
-    width: 12%;
+    width: 15%;
   }
   .content {
     border: 1px solid #d7d7d7;

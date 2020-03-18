@@ -1,17 +1,19 @@
 <template>
   <div class="message">
-    <item-select @itemClick="itemClick" />
-    <item-content
-      :titles="showContent"
-      class="item-content"
-      @showContact="showContact"
-      :contact-show="currentContact" />
+    <div class="message-content">
+      <item-select @itemClick="itemClick" />
+      <item-content
+        :titles="showContent"
+        class="item-content"
+        @showContact="showContact"
+        :contact-show="currentContact" />
+    </div>
   </div>
 </template>
 
 <script>
-import ItemSelect from "./childComps/ItemSelect";
-import ItemContent from "./childComps/ItemContent";
+import ItemSelect from "../../components/Message/ItemSelect";
+import ItemContent from "../../components/Message/ItemContent";
 
 export default {
   name: "Message",
@@ -24,6 +26,9 @@ export default {
       currentType: "comment",
       currentContact: "0c"
     };
+  },
+  mounted () {
+    document.body.style.backgroundColor = "#ededed";
   },
   computed: {
     showContent () {
@@ -55,10 +60,13 @@ export default {
 
 <style scoped>
   .message {
+    width: 1200px;
+    margin: 0 auto;
+  }
+  .message-content {
     width: 100%;
     display: flex;
-    background-color: #ededed;
-    margin: 0 auto
+    margin-left: 11%;
   }
   .item-content {
     margin-left: 3%;

@@ -19,7 +19,18 @@
       <div class="head">
         <span>消息中心</span>
       </div>
-      <h2>notice</h2>
+      <div class="notice-body">
+        <ul>
+          <li>
+            <notice-item v-for="(noticeInfo, index,) in noticeArray"
+                         :key="index+'n'"
+                         :notice-info="noticeInfo" />
+          </li>
+        </ul>
+      </div>
+      <div class="pagination">
+        <pagination class="el-pagination" />
+      </div>
     </div>
     <!--    私信-->
     <div
@@ -35,7 +46,7 @@
                 :key="index"
                 :user-info="userInfo"
                 @click.native="userClick(index)"
-                :class="{active: index === currentUser}" />
+                :class="{active: index === currentFriend}" />
         </div>
         <!--        聊天界面-->
         <div class="letter-right">
@@ -44,7 +55,9 @@
                    :user-info="userInfo"
                    v-show="contactShow === index+'c'"
                    :contact-index="index"
-                   @showLastMessage="showLastMessage" />
+                   @showLastMessage="showLastMessage"
+                   :current-user="currentUser"
+                   @getMessage="getMessage" />
         </div>
       </div>
     </div>
@@ -52,12 +65,19 @@
 </template>
 
 <script>
-import User from "./detail/User";
-import Contact from "./detail/Contact";
+// 系统通知组件
+import NoticeItem from "./systemNotice/NoticeItem";
+import Pagination from "./systemNotice/Pagination";
+
+// 私信组件
+import User from "./messageCenter/User";
+import Contact from "./messageCenter/Contact";
 
 export default {
   name: "IemContent",
   components: {
+    NoticeItem,
+    Pagination,
     User,
     Contact
   },
@@ -77,8 +97,28 @@ export default {
   },
   data () {
     return {
+      // 系统通知数据
+      noticeArray: [
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-16",
+          noticeContent: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内那内容内容内容内容内容内容内容内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
+        }
+      ],
+      paBgc: "white",
+      // 私信数据
       isActive: false,
-      currentUser: 0,
+      currentFriend: 0,
+      currentUser: {
+        userId: "阿绿",
+        userAvatar: "data:image/jpeg;base64,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",
+        haveSentMessage: ""
+      },
       userArray: [
         {
           userId: "阿门",
@@ -110,11 +150,14 @@ export default {
   },
   methods: {
     userClick (index) {
-      this.currentUser = index;
+      this.currentFriend = index;
       this.$emit("showContact", index);
     },
     showLastMessage (message, contactIndex) {
       this.userArray[contactIndex].lastMessage = message;
+    },
+    getMessage (message, contactIndex) {
+      console.log("aaa");
     }
   }
 };
@@ -124,7 +167,7 @@ export default {
   @import url("//unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css");
 
   .item-content {
-    width: 50%;
+    width: 60%;
     background-color: #fff;
     border: 1px solid #d7d7d7;
     border-radius: 10px;
@@ -147,6 +190,19 @@ export default {
     letter-spacing: 2px;
     color: #959595;
   }
+  .notice-body {
+    width: 90%;
+    height: 497px;
+    margin-left: 5%;
+  }
+  .notice-body ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  .notice-body li {
+    list-style: none;
+  }
   .letter-body {
     display: flex;
     width: 100%;
@@ -165,5 +221,18 @@ export default {
   }
   .active {
     background-color: #f4f5f7;
+  }
+</style>
+<style>
+  .el-pagination.is-background .el-pager li:not(.disabled).active {
+    color: #fff !important;
+    background-color: #292a2c !important;
+  }
+  .el-pagination.is-background .el-pager li {
+    color: #292a2c !important;
+    background-color: #fff;
+  }
+  .el-pagination.is-background .el-pager li:hover{
+    color: #292a2c !important;
   }
 </style>
