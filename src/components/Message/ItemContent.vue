@@ -1,73 +1,101 @@
 <!--右侧界面显示组件-->
 <template>
   <div class="item-content">
-    <!--    评论/留言-->
-    <div
-      class="comment"
-      v-show="commentShow">
-      <div class="head">
-        <span>消息中心</span>
-      </div>
-      <div class="comment-content">
-        <h2>comment</h2>
-      </div>
-    </div>
-    <!--    系统通知-->
-    <div
-      class="notice"
-      v-show="noticeShow">
-      <div class="head">
-        <span>消息中心</span>
-      </div>
-      <div class="notice-body">
-        <ul>
-          <li>
-            <notice-item v-for="(noticeInfo, index,) in noticeArray"
-                         :key="index+'n'"
-                         :notice-info="noticeInfo" />
-          </li>
-        </ul>
-      </div>
-      <div class="pagination">
-        <pagination class="el-pagination" />
-      </div>
-    </div>
-    <!--    私信-->
-    <div
-      class="letter"
-      v-show="letterShow">
-      <div class="head">
-        <span>消息中心</span>
-      </div>
-      <div class="letter-body">
-        <!--        消息发送人-->
-        <div class="letter-left">
-          <user v-for="(userInfo, index) in userArray"
-                :key="index"
-                :user-info="userInfo"
-                @click.native="userClick(index)"
-                :class="{active: index === currentFriend}" />
+    <div class="content-body">
+      <!--    评论/留言-->
+      <div
+        class="comment"
+        v-show="commentShow">
+        <div class="head">
+          <span>消息中心</span>
         </div>
-        <!--        聊天界面-->
-        <div class="letter-right">
-          <contact v-for="(userInfo, index) in userArray"
-                   :key="index+'c'"
-                   :user-info="userInfo"
-                   v-show="contactShow === index+'c'"
-                   :contact-index="index"
-                   @showLastMessage="showLastMessage"
-                   :current-user="currentUser"
-                   @getMessage="getMessage" />
+        <div class="comment-body">
+          <ul>
+            <li v-for="(itemInfo, index) in currentPageArray"
+                :key="index + 'rc'">
+              <reply-item v-if="itemInfo.type === 0" :reply-info="itemInfo" />
+              <comment-item v-else :comment-info="itemInfo" />
+            </li>
+          </ul>
         </div>
       </div>
+      <!--    系统通知-->
+      <div
+        class="notice"
+        id="notice"
+        v-show="noticeShow">
+        <div class="head">
+          <span>消息中心</span>
+        </div>
+        <div class="notice-body">
+          <ul>
+            <li v-for="(noticeInfo, index,) in currentNoticePageArray"
+                :key="index+'n'">
+              <notice-item :notice-info="noticeInfo" />
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!--    私信-->
+      <div
+        class="letter"
+        v-show="letterShow">
+        <div class="head">
+          <span>消息中心</span>
+        </div>
+        <div class="letter-body">
+          <!--        消息发送人-->
+          <div class="letter-left">
+            <user v-for="(userInfo, index) in userArray"
+                  :key="index"
+                  :user-info="userInfo"
+                  @click.native="userClick(index)"
+                  :class="{active: index === currentFriend}" />
+          </div>
+          <!--        聊天界面-->
+          <div class="letter-right">
+            <contact v-for="(userInfo, index) in userArray"
+                     :key="index+'c'"
+                     :user-info="userInfo"
+                     v-show="contactShow === index+'c'"
+                     :contact-index="index"
+                     @showLastMessage="showLastMessage"
+                     :current-user="currentUser" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--      翻页-->
+    <div class="pagination" id="pagination1">
+      <el-pagination
+        v-show="commentShow"
+        background
+        class="el-pagination2"
+        layout="pager"
+        :page-size="pageSize"
+        :total="totalNum"
+        @current-change="HandleCoReCurrentChange" />
+    </div>
+    <div class="pagination" id="pagination2">
+      <el-pagination
+        v-show="noticeShow"
+        background
+        class="el-pagination2"
+        layout="pager"
+        :page-size="noticePageSize"
+        :total="noticeTotalNum"
+        @current-change="HandleCurrentChange" />
     </div>
   </div>
 </template>
 
 <script>
+// 评论留言组件
+import ReplyItem from "./commentItem/ReplyItem";
+import CommentItem from "./commentItem/CommentItem";
+
 // 系统通知组件
 import NoticeItem from "./systemNotice/NoticeItem";
-import Pagination from "./systemNotice/Pagination";
 
 // 私信组件
 import User from "./messageCenter/User";
@@ -76,8 +104,9 @@ import Contact from "./messageCenter/Contact";
 export default {
   name: "IemContent",
   components: {
+    ReplyItem,
+    CommentItem,
     NoticeItem,
-    Pagination,
     User,
     Contact
   },
@@ -97,12 +126,90 @@ export default {
   },
   data () {
     return {
+      // 评论/留言数据
+      pageSize: 5,
+      totalNum: 10,
+      currentPage: 1,
+      reCoArray: [
+        {
+          type: 0,
+          name: "用户昵称",
+          time: "2020-3-01 12:00",
+          replyContent: "回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容",
+          myComment: "我的评论我的评论我的评论我的评论我的评论我的评论我的评论我的评论我的评论",
+          imgSrc: ""
+        },
+        {
+          type: 1,
+          name: "用户昵称",
+          time: "2020-3-02 12:00",
+          commentReply: "评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容",
+          imgSrc: ""
+        },
+        {
+          type: 0,
+          name: "用户昵称",
+          time: "2020-2-27 12:00",
+          replyContent: "回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容回复内容",
+          myComment: "我的评论我的评论我的评论我的评论我的评论我的评论我的评论我的评论我的评论",
+          imgSrc: ""
+        },
+        {
+          type: 1,
+          name: "用户昵称",
+          time: "2020-3-02 12:00",
+          commentReply: "评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容",
+          imgSrc: ""
+        },
+        {
+          type: 1,
+          name: "用户昵称",
+          time: "2020-3-02 12:00",
+          commentReply: "评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容",
+          imgSrc: ""
+        },
+        {
+          type: 1,
+          name: "用户昵称",
+          time: "2020-3-02 12:00",
+          commentReply: "评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容评论内容",
+          imgSrc: ""
+        }
+      ],
       // 系统通知数据
+      noticePageSize: 6,
+      noticeTotalNum: 10,
+      noticeCurrentPage: 1,
       noticeArray: [
         {
           noticeTitle: "标题标题标题标题",
           noticeTime: "2020-3-16",
           noticeContent: "内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内那内容内容内容内容内容内容内容内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
+        },
+        {
+          noticeTitle: "标题标题标题标题",
+          noticeTime: "2020-3-15",
+          noticeContent: "内容那内容内容内容内容内容内容"
         },
         {
           noticeTitle: "标题标题标题标题",
@@ -137,6 +244,10 @@ export default {
         }]
     };
   },
+  created () {
+    this.noticeTotalNum = this.noticeArray.length;
+    this.totalNum = this.reCoArray.length;
+  },
   computed: {
     commentShow () {
       return this.titles === "comment";
@@ -146,6 +257,12 @@ export default {
     },
     letterShow () {
       return this.titles === "letter";
+    },
+    currentNoticePageArray () {
+      return this.noticeArray.slice((this.noticeCurrentPage - 1) * this.noticePageSize, this.noticeCurrentPage * this.noticePageSize);
+    },
+    currentPageArray () {
+      return this.reCoArray.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     }
   },
   methods: {
@@ -156,8 +273,11 @@ export default {
     showLastMessage (message, contactIndex) {
       this.userArray[contactIndex].lastMessage = message;
     },
-    getMessage (message, contactIndex) {
-      console.log("aaa");
+    HandleCurrentChange (cpage) {
+      this.noticeCurrentPage = cpage;
+    },
+    HandleCoReCurrentChange (cpage) {
+      this.currentPage = cpage;
     }
   }
 };
@@ -165,9 +285,10 @@ export default {
 
 <style scoped>
   @import url("//unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css");
-
   .item-content {
     width: 60%;
+  }
+  .content-body {
     background-color: #fff;
     border: 1px solid #d7d7d7;
     border-radius: 10px;
@@ -190,18 +311,27 @@ export default {
     letter-spacing: 2px;
     color: #959595;
   }
+  .comment-body {
+    width: 90%;
+    height: 497px;
+    margin-left: 5%;
+  }
   .notice-body {
     width: 90%;
     height: 497px;
     margin-left: 5%;
   }
-  .notice-body ul {
+  ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
   }
-  .notice-body li {
+  li {
     list-style: none;
+  }
+  .pagination {
+    margin-top: 2%;
+    text-align: center;
   }
   .letter-body {
     display: flex;
@@ -213,6 +343,7 @@ export default {
     width: 30%;
     height: 497px;
     border-right: 1px solid #d7d7d7;
+    overflow: auto;
   }
   .letter-right {
     width: 70%;

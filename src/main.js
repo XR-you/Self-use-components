@@ -4,13 +4,14 @@ import router from "./router";
 import store from "./store";
 import Axios from "axios";
 
-import { Avatar, Pagination } from "element-ui";
+import { Avatar, Pagination, Table } from "element-ui";
 
 Vue.config.productionTip = false;
 Vue.prototype.$axios = Axios;
 
 Vue.use(Avatar);
 Vue.use(Pagination);
+Vue.use(Table);
 
 new Vue({
   router,

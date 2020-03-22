@@ -4,6 +4,15 @@
     <div class="letter-main">
       <!--      展示聊天记录-->
       <ul>
+        <!--        接收对方消息-->
+        <li v-for="(message, index) in messageArray"
+            :key="index">
+          <get-message-item
+            v-show="currentUser.userId === userInfo.userId"
+            :message-item="message"
+            :current-user="currentUser" />
+        </li>
+        <!--        向对方发送消息-->
         <li
           v-for="(message, index) in messageArray"
           :key="index">
@@ -27,11 +36,13 @@
 
 <script>
 import MessageItem from "./MessageItem";
+import GetMessageItem from "./GetMessageItem";
 
 export default {
   name: "Contact",
   components: {
-    MessageItem
+    MessageItem,
+    GetMessageItem
   },
   props: {
     userInfo: {
@@ -46,6 +57,7 @@ export default {
         return 0;
       }
     },
+    // 当前登录用户
     currentUser: {
       type: Object,
       default () {
@@ -64,7 +76,6 @@ export default {
       if (this.message !== "") {
         this.messageArray.push(this.message);
         this.$emit("showLastMessage", this.message, this.contactIndex); // 用于在user中显示最后一条消息
-        this.$emit("getMessage", this.message, this.contactIndex);
         this.message = "";
       }
     }

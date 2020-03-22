@@ -28,14 +28,18 @@ export default {
 
 <style scoped>
   .notice-item {
-    padding: 10px 0;
+    padding: 1.4% 0;
     border-top: 1px solid #d7d7d7;
+    font-size: 14px;
+  }
+  .notice-item div {
+    padding: 1px 0;
   }
   .notice-content {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
 </style>
